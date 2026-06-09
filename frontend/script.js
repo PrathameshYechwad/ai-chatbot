@@ -46,7 +46,7 @@ async function sendMsg() {
   addMsg("user", msg);
   document.getElementById("msg").value = "";
 
-  const res = await fetch("http://localhost:5000/chat", {
+  const res = await fetch("https://ai-chatbot-qaxb.onrender.com/chat", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
