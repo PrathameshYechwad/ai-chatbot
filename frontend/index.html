@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>AI SaaS Chat</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div id="auth">
+
+  <div class="box">
+    <h2>Login</h2>
+    <input id="loginEmail" placeholder="Email">
+    <input id="loginPass" type="password" placeholder="Password">
+    <button onclick="login()">Login</button>
+
+    <hr>
+
+    <h2>Register</h2>
+    <input id="regEmail" placeholder="Email">
+    <input id="regPass" type="password" placeholder="Password">
+    <button onclick="register()">Register</button>
+  </div>
+
+</div>
+
+<!-- CHAT APP -->
+<div id="app" style="display:none">
+
+  <div class="layout">
+
+    <div class="sidebar">
+      <h3>AI Chat</h3>
+      <button onclick="logout()">Logout</button>
+    </div>
+
+    <div class="main">
+
+      <div id="chat"></div>
+
+      <div class="input">
+        <input id="msg" placeholder="Ask something...">
+        <button onclick="sendMsg()">Send</button>
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
