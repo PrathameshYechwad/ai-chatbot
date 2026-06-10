@@ -1,77 +1,51 @@
-let token = localStorage.getItem("token");
+async function sendMessage() {
+  const inputBox = document.getElementById("message");
+  const chatBox = document.getElementById("chat-box");
 
-if (token) {
-  document.getElementById("auth").style.display = "none";
-  document.getElementById("app").style.display = "block";
-}
+  const message = inputBox.value.trim();
 
-async function register() {
-  const email = document.getElementById("regEmail").value;
-  const password = document.getElementById("regPass").value;
+  if (!message) return;
 
-  await fetch("http://localhost:5000/register", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email, password })
-  });
+  // show user message
+  const userMsg = document.createElement("div");
+  userMsg.className = "user";
+  userMsg.innerText = "You: " + message;
+  chatBox.appendChild(userMsg);
 
-  alert("Registered! Now login");
-}
+  inputBox.value = "";
 
-async function login() {
-  const email = document.getElementById("loginEmail").value;
-  const password = document.getElementById("loginPass").value;
+  try {
+    // call backend
+    const res = await fetch("http://localhost:5000/chat", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ message }),
+    });
 
-  const res = await fetch("http://localhost:5000/login", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email, password })
-  });
+    const data = await res.json();
 
-  const data = await res.json();
+    // show bot reply
+    const botMsg = document.createElement("div");
+    botMsg.className = "bot";
+    botMsg.innerText = "AI: " + data.reply;
+    chatBox.appendChild(botMsg);
 
-  if (data.token) {
-    localStorage.setItem("token", data.token);
-    location.reload();
-  } else {
-    alert("Login failed");
+    // auto scroll
+    chatBox.scrollTop = chatBox.scrollHeight;
+
+  } catch (error) {
+    const errMsg = document.createElement("div");
+    errMsg.className = "bot";
+    errMsg.innerText = "Error: Server not responding";
+    chatBox.appendChild(errMsg);
   }
 }
 
-async function sendMsg() {
-  const msg = document.getElementById("msg").value;
-
-  if (!msg) return;
-
-  addMsg("user", msg);
-  document.getElementById("msg").value = "";
-
-  const res = await fetch("https://ai-chatbot-qaxb.onrender.com/chat", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      message: msg,
-      token: localStorage.getItem("token")
-    })
-  });
-
-  const data = await res.json();
-
-  addMsg("bot", data.reply);
-}
-
-function addMsg(type, text) {
-  const chat = document.getElementById("chat");
-
-  const div = document.createElement("div");
-  div.classList.add("msg", type);
-  div.innerText = text;
-
-  chat.appendChild(div);
-  chat.scrollTop = chat.scrollHeight;
-}
-
-function logout() {
-  localStorage.removeItem("token");
-  location.reload();
-}
+// optional: send on Enter key
+document.addEventListener("keydown", function (e) {
+  if (e.key === "Enter") {
+    sendMessage();
+  }
+});
