@@ -8,42 +8,33 @@ import { fileURLToPath } from "url";
 dotenv.config();
 
 const app = express();
+const PORT = process.env.PORT || 5000;
 
-// fix __dirname in ES modules
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// 🔥 MIDDLEWARE
-app.use(cors({
-  origin: "*"
-}));
-
+// Middleware
+app.use(cors());
 app.use(express.json());
 
-// (optional) serve frontend if needed in backend
-app.use(express.static(path.join(__dirname, "../frontend")));
-
-// homepage check
+// Health check
 app.get("/", (req, res) => {
-  res.send("🚀 Backend is running");
+  res.send("AI Chatbot Backend Running 🚀");
 });
 
-// 🔥 CHAT API
+// Chat API
 app.post("/chat", async (req, res) => {
   try {
     const message = req.body.message;
 
     if (!message) {
-      return res.status(400).json({
-        error: "Message is required"
-      });
+      return res.status(400).json({ error: "Message required" });
     }
 
-    // OpenRouter request
     const response = await axios.post(
       "https://openrouter.ai/api/v1/chat/completions",
       {
-        model: "openai/gpt-oss-20b:free",
+        model: "meta-llama/llama-3.1-8b-instruct",
         messages: [
           {
             role: "system",
@@ -58,9 +49,7 @@ app.post("/chat", async (req, res) => {
       {
         headers: {
           Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
-          "Content-Type": "application/json",
-          "HTTP-Referer": "https://ai-chatbot-qaxb.onrender.com",
-          "X-Title": "AI Chatbot"
+          "Content-Type": "application/json"
         }
       }
     );
@@ -70,18 +59,16 @@ app.post("/chat", async (req, res) => {
     res.json({ reply });
 
   } catch (error) {
-    console.error("Backend Error:", error.response?.data || error.message);
+    console.error("ERROR:", error.response?.data || error.message);
 
     res.status(500).json({
       error: "Server error",
-      details: error.response?.data?.error?.message || error.message
+      details: error.message
     });
   }
 });
 
-// 🔥 RENDER PORT FIX
-const PORT = process.env.PORT || 10000;
-
+// Start server
 app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
 });
