@@ -29,7 +29,7 @@ async function sendMessage() {
     // show bot reply
     const botMsg = document.createElement("div");
     botMsg.className = "bot";
-    botMsg.innerText = "AI: " + data.reply;
+   botMsg.innerText = JSON.stringify(data);
     chatBox.appendChild(botMsg);
 
     // auto scroll

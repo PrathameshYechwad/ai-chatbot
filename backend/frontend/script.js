@@ -6,7 +6,7 @@ async function sendMessage() {
 
   if (!message) return;
 
-  // show user message
+  // Show user message
   const userMsg = document.createElement("div");
   userMsg.className = "user";
   userMsg.innerText = "You: " + message;
@@ -15,7 +15,7 @@ async function sendMessage() {
   inputBox.value = "";
 
   try {
-    // call backend
+    // Call backend
     const res = await fetch("/chat", {
       method: "POST",
       headers: {
@@ -26,15 +26,20 @@ async function sendMessage() {
 
     const data = await res.json();
 
-    // show bot reply
+    // Show bot reply
     const botMsg = document.createElement("div");
     botMsg.className = "bot";
-    botMsg.innerText = "AI: " + data.reply;
+
+    if (data.reply) {
+      botMsg.innerText = "AI: " + data.reply;
+    } else {
+      botMsg.innerText = "Error: " + (data.error || "Unknown error");
+    }
+
     chatBox.appendChild(botMsg);
 
-    // auto scroll
+    // Auto scroll
     chatBox.scrollTop = chatBox.scrollHeight;
-
   } catch (error) {
     const errMsg = document.createElement("div");
     errMsg.className = "bot";
@@ -43,7 +48,7 @@ async function sendMessage() {
   }
 }
 
-// optional: send on Enter key
+// Send on Enter key
 document.addEventListener("keydown", function (e) {
   if (e.key === "Enter") {
     sendMessage();
