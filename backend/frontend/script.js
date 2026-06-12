@@ -16,7 +16,7 @@ async function sendMessage() {
 
   try {
     // call backend
-    const res = await fetch("http://localhost:5000/chat", {
+    const res = await fetch("/chat", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
