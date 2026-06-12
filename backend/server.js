@@ -16,12 +16,12 @@ const __dirname = path.dirname(__filename);
 app.use(cors());
 app.use(express.json());
 
-// Serve frontend
+// ✅ FIX: correct static path for Render + local
 app.use(express.static(path.join(process.cwd(), "frontend")));
 
 // Homepage
 app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "../frontend", "index.html"));
+  res.sendFile(path.join(process.cwd(), "frontend", "index.html"));
 });
 
 // Chat API
@@ -38,7 +38,9 @@ app.post("/chat", async (req, res) => {
     const response = await axios.post(
       "https://openrouter.ai/api/v1/chat/completions",
       {
-        model: "openai/gpt-oss-20b:free",
+        // ✅ FIXED STABLE MODEL
+        model: "meta-llama/llama-3.1-8b-instruct",
+
         messages: [
           {
             role: "system",
@@ -54,7 +56,7 @@ app.post("/chat", async (req, res) => {
         headers: {
           Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
           "Content-Type": "application/json",
-          "HTTP-Referer": "http://localhost:5000",
+          "HTTP-Referer": "https://ai-chatbot-qaxb.onrender.com",
           "X-Title": "AI Chatbot",
         },
       }
@@ -64,12 +66,11 @@ app.post("/chat", async (req, res) => {
 
     res.json({ reply });
   } catch (error) {
-    console.error(error.response?.data || error.message);
+    console.error("AI ERROR:", error.response?.data || error.message);
 
     res.status(500).json({
       error: "Server error",
-      details:
-        error.response?.data?.error?.message || error.message,
+      details: error.response?.data || error.message,
     });
   }
 });
