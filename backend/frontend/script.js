@@ -7,12 +7,7 @@ async function sendMessage() {
   const message = inputBox.value.trim();
   if (!message) return;
 
-  // show user message
-  const userMsg = document.createElement("div");
-  userMsg.className = "user";
-  userMsg.innerText = "You: " + message;
-  chatBox.appendChild(userMsg);
-
+  chatBox.innerHTML += `<div class="user">You: ${message}</div>`;
   inputBox.value = "";
 
   try {
@@ -26,27 +21,8 @@ async function sendMessage() {
 
     const data = await res.json();
 
-    const botMsg = document.createElement("div");
-    botMsg.className = "bot";
-
-    if (data.reply) {
-      botMsg.innerText = "AI: " + data.reply;
-    } else {
-      botMsg.innerText = "Error: " + (data.error || "No response");
-    }
-
-    chatBox.appendChild(botMsg);
-    chatBox.scrollTop = chatBox.scrollHeight;
-
+    chatBox.innerHTML += `<div class="bot">AI: ${data.reply || data.error}</div>`;
   } catch (err) {
-    const errMsg = document.createElement("div");
-    errMsg.className = "bot";
-    errMsg.innerText = "Error: Server not responding";
-    chatBox.appendChild(errMsg);
+    chatBox.innerHTML += `<div class="bot">Error: Server not responding</div>`;
   }
 }
-
-// Enter key support
-document.addEventListener("keydown", (e) => {
-  if (e.key === "Enter") sendMessage();
-});
