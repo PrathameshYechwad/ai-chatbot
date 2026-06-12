@@ -1,7 +1,7 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
-import OpenAI from "openai";
+import axios from "axios";
 import path from "path";
 import { fileURLToPath } from "url";
 
@@ -16,16 +16,8 @@ const __dirname = path.dirname(__filename);
 app.use(cors());
 app.use(express.json());
 
-// Serve frontend files
+// Serve frontend
 app.use(express.static(path.join(__dirname, "../frontend")));
-
-// OpenAI
-const client = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
-
-// Memory
-let chatHistory = [];
 
 // Homepage
 app.get("/", (req, res) => {
@@ -43,36 +35,41 @@ app.post("/chat", async (req, res) => {
       });
     }
 
-    chatHistory.push({
-      role: "user",
-      content: message,
-    });
-
-    const response = await client.chat.completions.create({
-      model: "gpt-4o-mini",
-      messages: [
-        {
-          role: "system",
-          content: "You are a helpful AI assistant.",
+    const response = await axios.post(
+      "https://openrouter.ai/api/v1/chat/completions",
+      {
+        model: "openai/gpt-oss-20b:free",
+        messages: [
+          {
+            role: "system",
+            content: "You are a helpful AI assistant.",
+          },
+          {
+            role: "user",
+            content: message,
+          },
+        ],
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
+          "Content-Type": "application/json",
+          "HTTP-Referer": "http://localhost:5000",
+          "X-Title": "AI Chatbot",
         },
-        ...chatHistory,
-      ],
-    });
+      }
+    );
 
-    const reply = response.choices[0].message.content;
-
-    chatHistory.push({
-      role: "assistant",
-      content: reply,
-    });
+    const reply = response.data.choices[0].message.content;
 
     res.json({ reply });
   } catch (error) {
-    console.error(error);
+    console.error(error.response?.data || error.message);
 
     res.status(500).json({
       error: "Server error",
-      details: error.message,
+      details:
+        error.response?.data?.error?.message || error.message,
     });
   }
 });
