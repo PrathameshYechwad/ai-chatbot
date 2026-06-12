@@ -1,5 +1,3 @@
-const BACKEND_URL = "https://ai-chatbot-qaxb.onrender.com";
-
 async function sendMessage() {
   const inputBox = document.getElementById("message");
   const chatBox = document.getElementById("chat-box");
@@ -7,43 +5,24 @@ async function sendMessage() {
   const message = inputBox.value.trim();
   if (!message) return;
 
-  // show user message
-  const userMsg = document.createElement("div");
-  userMsg.className = "user";
-  userMsg.innerText = "You: " + message;
-  chatBox.appendChild(userMsg);
-
+  chatBox.innerHTML += `<div class="user">You: ${message}</div>`;
   inputBox.value = "";
 
   try {
-    const res = await fetch(`${BACKEND_URL}/chat`, {
+    const res = await fetch("https://ai-chatbot-qaxb.onrender.com/chat", {
       method: "POST",
       headers: {
-        "Content-Type": "application/json",
+        "Content-Type": "application/json"
       },
-      body: JSON.stringify({ message }),
+      body: JSON.stringify({ message })
     });
 
     const data = await res.json();
 
-    const botMsg = document.createElement("div");
-    botMsg.className = "bot";
-
-    botMsg.innerText = data.reply
-      ? "AI: " + data.reply
-      : "Error: " + (data.error || "No response");
-
-    chatBox.appendChild(botMsg);
+    chatBox.innerHTML += `<div class="bot">AI: ${data.reply || data.error}</div>`;
     chatBox.scrollTop = chatBox.scrollHeight;
 
   } catch (err) {
-    const errMsg = document.createElement("div");
-    errMsg.className = "bot";
-    errMsg.innerText = "Error: Server not responding";
-    chatBox.appendChild(errMsg);
+    chatBox.innerHTML += `<div class="bot">Error: Server not responding</div>`;
   }
 }
-
-document.addEventListener("keydown", (e) => {
-  if (e.key === "Enter") sendMessage();
-});
