@@ -7,6 +7,7 @@ async function sendMessage() {
   const message = inputBox.value.trim();
   if (!message) return;
 
+  // show user message
   const userMsg = document.createElement("div");
   userMsg.className = "user";
   userMsg.innerText = "You: " + message;
@@ -38,7 +39,7 @@ async function sendMessage() {
   } catch (err) {
     const errMsg = document.createElement("div");
     errMsg.className = "bot";
-    errMsg.innerText = "Error: Backend not reachable";
+    errMsg.innerText = "Error: Server not responding";
     chatBox.appendChild(errMsg);
   }
 }
