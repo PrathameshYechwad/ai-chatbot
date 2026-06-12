@@ -22,6 +22,7 @@ async function sendMessage() {
     const data = await res.json();
 
     chatBox.innerHTML += `<div class="bot">AI: ${data.reply || data.error}</div>`;
+
   } catch (err) {
     chatBox.innerHTML += `<div class="bot">Error: Server not responding</div>`;
   }
