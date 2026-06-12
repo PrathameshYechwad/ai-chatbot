@@ -17,7 +17,7 @@ app.use(cors());
 app.use(express.json());
 
 // Serve frontend
-app.use(express.static(path.join(__dirname, "../frontend")));
+app.use(express.static(path.join(process.cwd(), "frontend")));
 
 // Homepage
 app.get("/", (req, res) => {
