@@ -1,12 +1,12 @@
+const BACKEND_URL = "https://ai-chatbot-qaxb.onrender.com";
+
 async function sendMessage() {
   const inputBox = document.getElementById("message");
   const chatBox = document.getElementById("chat-box");
 
   const message = inputBox.value.trim();
-
   if (!message) return;
 
-  // Show user message
   const userMsg = document.createElement("div");
   userMsg.className = "user";
   userMsg.innerText = "You: " + message;
@@ -15,8 +15,7 @@ async function sendMessage() {
   inputBox.value = "";
 
   try {
-    // Call backend
-    const res = await fetch("/chat", {
+    const res = await fetch(`${BACKEND_URL}/chat`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -26,31 +25,24 @@ async function sendMessage() {
 
     const data = await res.json();
 
-    // Show bot reply
     const botMsg = document.createElement("div");
     botMsg.className = "bot";
 
-    if (data.reply) {
-      botMsg.innerText = "AI: " + data.reply;
-    } else {
-      botMsg.innerText = "Error: " + (data.error || "Unknown error");
-    }
+    botMsg.innerText = data.reply
+      ? "AI: " + data.reply
+      : "Error: " + (data.error || "No response");
 
     chatBox.appendChild(botMsg);
-
-    // Auto scroll
     chatBox.scrollTop = chatBox.scrollHeight;
-  } catch (error) {
+
+  } catch (err) {
     const errMsg = document.createElement("div");
     errMsg.className = "bot";
-    errMsg.innerText = "Error: Server not responding";
+    errMsg.innerText = "Error: Backend not reachable";
     chatBox.appendChild(errMsg);
   }
 }
 
-// Send on Enter key
-document.addEventListener("keydown", function (e) {
-  if (e.key === "Enter") {
-    sendMessage();
-  }
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Enter") sendMessage();
 });
