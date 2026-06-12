@@ -1,3 +1,5 @@
+const BACKEND_URL = "https://ai-chatbot-qaxb.onrender.com";
+
 async function sendMessage() {
   const inputBox = document.getElementById("message");
   const chatBox = document.getElementById("chat-box");
@@ -9,7 +11,7 @@ async function sendMessage() {
   inputBox.value = "";
 
   try {
-    const res = await fetch("https://ai-chatbot-qaxb.onrender.com/chat", {
+    const res = await fetch(`${BACKEND_URL}/chat`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
